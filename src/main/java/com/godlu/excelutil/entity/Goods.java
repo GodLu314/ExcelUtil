@@ -25,5 +25,5 @@ public class Goods {
     @ExcelProperty(value = "入库单价")
     private Float price;//单价
     @ExcelProperty(value = "总金额")
-    private Float tocalPrice;//总金额
+    private Float totalPrice;//总金额
 }

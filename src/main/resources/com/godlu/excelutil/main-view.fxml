@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -15,185 +16,150 @@
 
 <VBox fx:id="mainVB" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.godlu.excelutil.controller.MainController">
    <MenuBar>
-     <menus>
-       <Menu mnemonicParsing="false" text="文件">
-         <items>
-           <MenuItem mnemonicParsing="false" text="Close" />
-         </items>
-       </Menu>
-       <Menu mnemonicParsing="false" text="编辑">
-         <items>
-           <MenuItem mnemonicParsing="false" text="Delete" />
-         </items>
-       </Menu>
-       <Menu mnemonicParsing="false" text="帮助">
-         <items>
-           <MenuItem mnemonicParsing="false" text="About" />
-         </items>
-       </Menu>
-     </menus>
+      <Menu mnemonicParsing="false" text="文件">
+         <MenuItem mnemonicParsing="false" text="Close"/>
+      </Menu>
+      <Menu mnemonicParsing="false" text="编辑">
+         <MenuItem mnemonicParsing="false" text="Delete"/>
+      </Menu>
+      <Menu mnemonicParsing="false" text="帮助">
+         <MenuItem mnemonicParsing="false" text="About"/>
+      </Menu>
    </MenuBar>
    <TabPane prefHeight="484.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
-     <tabs>
-       <Tab text="首页">
-            <content>
-               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="700.0">
-                  <children>
-                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                        <children>
-                           <Label text="文件路径" />
-                           <TextField fx:id="filePathTF" prefHeight="26.0" prefWidth="472.0" promptText="可以拖拽文件至此自动识别哦！">
-                              <opaqueInsets>
-                                 <Insets />
-                              </opaqueInsets>
-                              <HBox.margin>
-                                 <Insets right="30.0" />
-                              </HBox.margin>
-                           </TextField>
-                           <Button fx:id="selectFileBT" mnemonicParsing="false" onAction="#selectFilePath" text="选择文件" />
-                        </children>
-                     </HBox>
-                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                        <children>
-                           <Label text="输出路径" />
-                           <TextField fx:id="outPathTF" prefHeight="26.0" prefWidth="472.0" promptText="请输入文件输出路径">
-                              <opaqueInsets>
-                                 <Insets />
-                              </opaqueInsets>
-                              <HBox.margin>
-                                 <Insets right="30.0" />
-                              </HBox.margin>
-                           </TextField>
-                           <Button fx:id="selectOutBT" mnemonicParsing="false" onAction="#selectOutFileDir" text="选择目录" />
-                        </children>
-                     </HBox>
-                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                        <children>
-                           <Button mnemonicParsing="false" onAction="#doWork" prefHeight="30.0" prefWidth="123.0" text="开 始 转 换">
-                              <HBox.margin>
-                                 <Insets />
-                              </HBox.margin>
-                              <font>
-                                 <Font size="15.0" />
-                              </font>
-                           </Button>
-                        </children>
-                     </HBox>
-                  </children>
-               </VBox>
-            </content>
-       </Tab>
-       <Tab text="手动添加">
-           <content>
-               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-                  <children>
-                     <Label alignment="CENTER" prefHeight="50.0" prefWidth="200.0" text="添 加 简 称" textAlignment="CENTER">
-                        <font>
-                           <Font name="KaiTi" size="24.0" />
-                        </font>
-                     </Label>
-                     <HBox alignment="CENTER" prefHeight="80.0" prefWidth="700.0">
-                        <children>
-                           <Label text="简称：" />
-                           <TextField fx:id="shortNameTF" promptText="请添加简称">
-                              <HBox.margin>
-                                 <Insets right="10.0" />
-                              </HBox.margin>
-                           </TextField>
-                           <Button mnemonicParsing="false" onAction="#addShortName" text="添加">
-                              <HBox.margin>
-                                 <Insets left="10.0" />
-                              </HBox.margin>
-                           </Button>
-                        </children>
+      <Tab text="首页">
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="700.0">
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <Label text="文件路径"/>
+               <TextField fx:id="filePathTF" prefHeight="26.0" prefWidth="472.0" promptText="可以拖拽文件至此自动识别哦！">
+                  <opaqueInsets>
+                     <Insets/>
+                  </opaqueInsets>
+                  <HBox.margin>
+                     <Insets right="30.0"/>
+                  </HBox.margin>
+               </TextField>
+               <Button mnemonicParsing="false" onAction="#selectFilePath" text="选择文件"/>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="20.0"/>
+               </VBox.margin>
+               <Label text="输出路径"/>
+               <TextField fx:id="outPathTF" prefHeight="26.0" prefWidth="472.0" promptText="请输入文件输出路径">
+                  <opaqueInsets>
+                     <Insets/>
+                  </opaqueInsets>
+                  <HBox.margin>
+                     <Insets right="30.0"/>
+                  </HBox.margin>
+               </TextField>
+               <Button mnemonicParsing="false" onAction="#selectOutFileDir" text="选择目录"/>
+            </HBox>
+            <CheckBox fx:id="addTotalCB" mnemonicParsing="false" text="添加合计">
+               <VBox.margin>
+                  <Insets bottom="20.0"/>
+               </VBox.margin>
+            </CheckBox>
+            <Button mnemonicParsing="false" onAction="#doWork" prefHeight="30.0" prefWidth="123.0" text="开 始 转 换">
+               <font>
+                  <Font size="15.0"/>
+               </font>
+            </Button>
+         </VBox>
+      </Tab>
+      <Tab text="手动添加">
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+            <Label alignment="CENTER" prefHeight="50.0" prefWidth="200.0" text="添 加 简 称" textAlignment="CENTER">
+               <font>
+                  <Font name="KaiTi" size="24.0"/>
+               </font>
+            </Label>
+            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="700.0">
+               <VBox.margin>
+                  <Insets bottom="50.0"/>
+               </VBox.margin>
+               <Label text="简称："/>
+               <TextField fx:id="shortNameTF" promptText="请添加简称">
+                  <HBox.margin>
+                     <Insets right="10.0"/>
+                  </HBox.margin>
+               </TextField>
+               <Button mnemonicParsing="false" onAction="#addShortName" text="添加">
+                  <HBox.margin>
+                     <Insets left="10.0"/>
+                  </HBox.margin>
+               </Button>
+            </HBox>
+            <Label prefWidth="204.0" text="添 加 库 内 数 据">
+               <font>
+                  <Font name="KaiTi" size="24.0"/>
+               </font>
+            </Label>
+            <HBox alignment="CENTER_LEFT" prefHeight="150.0" prefWidth="700.0">
+               <HBox alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="420.0">
+                  <VBox alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="521.0">
+                     <Label text="物品名称：">
                         <VBox.margin>
-                           <Insets bottom="50.0" />
+                           <Insets bottom="40.0"/>
                         </VBox.margin>
-                     </HBox>
-                     <Label prefWidth="204.0" text="添 加 库 内 数 据">
-                        <font>
-                           <Font name="KaiTi" size="24.0" />
-                        </font>
                      </Label>
-                     <HBox alignment="CENTER_LEFT" prefHeight="150.0" prefWidth="700.0">
-                        <children>
-                           <HBox alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="420.0">
-                              <children>
-                                 <VBox alignment="CENTER_RIGHT" prefHeight="150.0" prefWidth="521.0">
-                                    <children>
-                                       <Label text="物品名称：">
-                                          <VBox.margin>
-                                             <Insets bottom="40.0" />
-                                          </VBox.margin>
-                                       </Label>
-                                       <Label text="计量单位：" />
-                                    </children>
-                                 </VBox>
-                                 <VBox alignment="CENTER" prefHeight="150.0" prefWidth="419.0">
-                                    <children>
-                                       <TextField fx:id="goodsNameTF" promptText="请添加物品名称">
-                                          <VBox.margin>
-                                             <Insets bottom="40.0" />
-                                          </VBox.margin>
-                                       </TextField>
-                                       <TextField fx:id="measureUnitTF" promptText="请添加计量单位" />
-                                    </children>
-                                 </VBox>
-                              </children>
-                           </HBox>
-                           <Button mnemonicParsing="false" onAction="#addSystemData" text="添加">
-                              <HBox.margin>
-                                 <Insets left="20.0" />
-                              </HBox.margin>
-                           </Button>
-                        </children>
-                     </HBox>
-                  </children></VBox>
-           </content>
-       </Tab>
-         <Tab text="自动添加">
-            <content>
-               <VBox alignment="CENTER" prefHeight="200.0" prefWidth="700.0">
-                  <children>
-                     <Label prefHeight="29.0" prefWidth="88.0" text="文件生成步骤">
-                        <font>
-                           <Font name="System Bold" size="14.0" />
-                        </font></Label>
-                     <Label prefHeight="29.0" prefWidth="500.0" text="1.打开入库官网并登录" />
-                     <Label prefHeight="29.0" prefWidth="500.0" text="2.随便找到可以查找分类的地方并按12打开开发者选项；" />
-                     <Label prefHeight="29.0" prefWidth="500.0" text="3.输入想添加数据的简称后在开发者控制台中的网络选项下找到getPageList请求；" />
-                     <Label prefHeight="29.0" prefWidth="500.0" text="4.在getPageList请求中找到响应选项并点击进入，复制里面的数据；" />
-                     <Label prefHeight="29.0" prefWidth="500.0" text="5.新建一个txt文件，将复制的数据粘贴进去并保存" />
-                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                        <children>
-                           <Label text="文件路径" />
-                           <TextField fx:id="txtPathTF" prefHeight="26.0" prefWidth="472.0" promptText="将按以上步骤创建的txt文件拖拽至此或者手动选择文件">
-                              <opaqueInsets>
-                                 <Insets />
-                              </opaqueInsets>
-                              <HBox.margin>
-                                 <Insets right="30.0" />
-                              </HBox.margin>
-                           </TextField>
-                           <Button mnemonicParsing="false" onAction="#selectTxtPath" text="选择文件" />
-                        </children>
-                     </HBox>
-                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-                        <children>
-                           <Button mnemonicParsing="false" onAction="#beginRead" prefHeight="30.0" prefWidth="123.0" text="开  始">
-                              <HBox.margin>
-                                 <Insets />
-                              </HBox.margin>
-                              <font>
-                                 <Font size="15.0" />
-                              </font>
-                           </Button>
-                        </children>
-                     </HBox>
-                  </children>
-               </VBox>
-            </content>
-         </Tab>
-     </tabs>
+                     <Label text="计量单位："/>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="150.0" prefWidth="419.0">
+                     <TextField fx:id="goodsNameTF" promptText="请添加物品名称">
+                        <VBox.margin>
+                           <Insets bottom="40.0"/>
+                        </VBox.margin>
+                     </TextField>
+                     <TextField fx:id="measureUnitTF" promptText="请添加计量单位"/>
+                  </VBox>
+               </HBox>
+               <Button mnemonicParsing="false" onAction="#addSystemData" text="添加">
+                  <HBox.margin>
+                     <Insets left="20.0"/>
+                  </HBox.margin>
+               </Button>
+            </HBox>
+         </VBox>
+      </Tab>
+      <Tab text="自动添加">
+         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="700.0">
+            <Label prefHeight="29.0" prefWidth="88.0" text="文件生成步骤">
+               <font>
+                  <Font name="System Bold" size="14.0"/>
+               </font>
+            </Label>
+            <Label prefHeight="29.0" prefWidth="500.0" text="1.打开入库官网并登录"/>
+            <Label prefHeight="29.0" prefWidth="500.0" text="2.随便找到可以查找分类的地方并按12打开开发者选项；"/>
+            <Label prefHeight="29.0" prefWidth="500.0" text="3.输入想添加数据的简称后在开发者控制台中的网络选项下找到getPageList请求；"/>
+            <Label prefHeight="29.0" prefWidth="500.0" text="4.在getPageList请求中找到响应选项并点击进入，复制里面的数据；"/>
+            <Label prefHeight="29.0" prefWidth="500.0" text="5.新建一个txt文件，将复制的数据粘贴进去并保存"/>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <Label text="文件路径"/>
+               <TextField fx:id="txtPathTF" prefHeight="26.0" prefWidth="472.0"
+                          promptText="将按以上步骤创建的txt文件拖拽至此或者手动选择文件">
+                  <opaqueInsets>
+                     <Insets/>
+                  </opaqueInsets>
+                  <HBox.margin>
+                     <Insets right="30.0"/>
+                  </HBox.margin>
+               </TextField>
+               <Button mnemonicParsing="false" onAction="#selectTxtPath" text="选择文件"/>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <Button mnemonicParsing="false" onAction="#beginRead" prefHeight="30.0" prefWidth="123.0"
+                       text="开  始">
+                  <HBox.margin>
+                     <Insets/>
+                  </HBox.margin>
+                  <font>
+                     <Font size="15.0"/>
+                  </font>
+               </Button>
+            </HBox>
+         </VBox>
+      </Tab>
    </TabPane>
 </VBox>

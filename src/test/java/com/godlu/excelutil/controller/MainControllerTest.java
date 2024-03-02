@@ -2,6 +2,7 @@ package com.godlu.excelutil.controller;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.read.listener.PageReadListener;
+import com.alibaba.excel.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -127,5 +128,18 @@ public class MainControllerTest {
         LogUtil.info("信息");
         LogUtil.warn("警告");
         LogUtil.error("错误");
+    }
+
+    @Test
+    public void testIsNull(){
+        Goods goods = new Goods();
+        System.out.println(goods);
+        System.out.println(StringUtils.isEmpty(goods.getName()));
+        System.out.println(goods.getCount());
+    }
+
+    @Test
+    public void testDialog(){
+        //DialogUtils.showPromptDialog();
     }
 }

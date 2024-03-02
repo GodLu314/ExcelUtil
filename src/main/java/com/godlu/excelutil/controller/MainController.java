@@ -1,7 +1,8 @@
 package com.godlu.excelutil.controller;
 
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.listener.PageReadListener;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -15,20 +16,22 @@ import com.godlu.excelutil.utils.LogUtil;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import org.apache.commons.io.FilenameUtils;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class MainController implements Initializable {
     private List<Goods> excelDataList = new ArrayList<>();//原表数据集合
@@ -47,18 +50,31 @@ public class MainController implements Initializable {
     public TextField goodsNameTF;
     public TextField measureUnitTF;
     public TextField txtPathTF;
+    public CheckBox addTotalCB;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //读取json数据
         readJsonData();
-        setDragEvent();
+        //展示温馨提示
         showTipDialog();
+        //设置拖拽文件
+        setDragEvent(filePathTF, new DragListener() {
+            @Override
+            public void onDragFile(File file) {
+                updateInFile(file);
+            }
+        },"xls","xlsx");
+        setDragEvent(txtPathTF, new DragListener() {
+            @Override
+            public void onDragFile(File file) {
+                updateTxtFile(file);
+            }
+        },"txt");
     }
-
     private void showTipDialog() {
         DialogUtils.showPromptDialog(mainVB,"每次选择表格时请务必保证表格内列名称与后台模板一致，否则无法正常读取");
     }
-
     private void readJsonData() {
         //获取库内数据集合
         systemDataList.clear();
@@ -67,7 +83,7 @@ public class MainController implements Initializable {
         if (systemDataArray != null) {
             systemDataList = systemDataArray.toJavaList(SystemGoods.class);
         }
-        LogUtil.info("读取库内数据集合为：" + systemDataList);
+        LogUtil.info("读取到" + systemDataList.size() + "条库内数据集合：" + systemDataList);
         //获取简称集合
         shortNameList.clear();
         String shotDataStr = FileUtil.getInstance().getShotDataStr();
@@ -75,55 +91,65 @@ public class MainController implements Initializable {
         if (shorNameArray != null) {
             shortNameList = shorNameArray.toJavaList(String.class);
         }
-        LogUtil.info("读取简称集合为：" + shortNameList);
+        LogUtil.info("读取到" + shortNameList.size() + "条简称集合为：" + shortNameList);
     }
 
     /**
-    * @Author: GodLu
-    * @Date: 2024/2/25 12:48
-    * @Description: 设置拖拽事件
-    * @param
-    * @return: void
-    */
-    private void setDragEvent() {
-        filePathTF.setFocusTraversable(false);
-        filePathTF.setOnDragOver(new EventHandler<DragEvent>() { //node添加拖入文件事件
+     * @Author: GodLu
+     * @Date: 2024/3/2 1:36
+     * @Description: 为指定控件添加拖拽文件功能
+     * @param node 指定控件
+     * @param listener 监听
+     * @param extensions 文件后缀名
+     * @return: void
+     */
+    private void setDragEvent(Node node,DragListener listener,String... extensions) {
+        node.setFocusTraversable(false);
+        node.setOnDragOver(new EventHandler<DragEvent>() { //node添加拖入文件事件
             public void handle(DragEvent event) {
                 Dragboard dragboard = event.getDragboard();
                 if (dragboard.hasFiles()) {
                     File file = dragboard.getFiles().get(0);
-                    //判断文件是否为png文件
-                    if (file.getAbsolutePath().endsWith(".xls") || file.getAbsolutePath().endsWith(".xlsx")) { //用来过滤拖入类型
+                    //判断文件是否为指定类型的文件
+                    String[] sufixArray = extensions.clone();
+                    List<String> sufixs = Arrays.asList(sufixArray);
+                    if (sufixs.contains(FilenameUtils.getExtension(file.getName()))) { //用来过滤拖入类型
                         event.acceptTransferModes(TransferMode.COPY);//接受拖入文件
                     }
                 }
             }
         });
-        filePathTF.setOnDragDropped(new EventHandler<DragEvent>() { //拖入后松开鼠标触发的事件
+        node.setOnDragDropped(new EventHandler<DragEvent>() { //拖入后松开鼠标触发的事件
             public void handle(DragEvent event) {
                 Dragboard dragboard = event.getDragboard();
                 if (event.isAccepted()) {
                     //获取拖入的文件
-                    updateInFile(dragboard.getFiles().get(0));
+                    listener.onDragFile(dragboard.getFiles().get(0));
                 }
             }
         });
-        filePathTF.setOnDragEntered(new EventHandler<DragEvent>() {
+        node.setOnDragEntered(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
                 Dragboard dragboard = event.getDragboard();
-                String absolutePath = dragboard.getFiles().get(0).getAbsolutePath();
-                if (absolutePath.endsWith(".xls") || absolutePath.endsWith(".xlsx")) {
-                    filePathTF.setStyle("-fx-opacity: 0.3;");//设置透明度背景展示拖入效果
+                File file = dragboard.getFiles().get(0);
+                //判断文件是否为指定类型的文件
+                String[] sufixArray = extensions.clone();
+                List<String> sufixs = Arrays.asList(sufixArray);
+                if (sufixs.contains(FilenameUtils.getExtension(file.getName()))) { //用来过滤拖入类型
+                    node.setStyle("-fx-opacity: 0.3;");//设置透明度背景展示拖入效果
                 }
             }
         });
-        filePathTF.setOnDragExited(new EventHandler<DragEvent>() {
+        node.setOnDragExited(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
-                filePathTF.setStyle("-fx-opacity: 1;");
+                node.setStyle("-fx-opacity: 1;");
             }
         });
+    }
+    public interface DragListener{
+        void onDragFile(File file);
     }
 
     //选择输入文件路径
@@ -160,10 +186,24 @@ public class MainController implements Initializable {
         System.out.println("输入文件路径：" + inFile.getPath());
         updateOutFileDir(inFile.getParentFile());
         //读取原表数据集合
-        EasyExcel.read(inFile.getPath(), Goods.class,new PageReadListener<Goods>(list -> {
-            excelDataList.addAll(list);
-            LogUtil.info("读取到的原表数据：" + excelDataList.toString());
-        })).sheet().doRead();
+        EasyExcel.read(inFile.getPath(), Goods.class, new ReadListener<Goods>() {
+            @Override
+            public void invoke(Goods goods, AnalysisContext analysisContext) {
+                if (StringUtils.isEmpty(goods.getName()) || StringUtils.isEmpty(goods.getMeasureUnit()) ||
+                        goods.getCount() == null || goods.getCount() == 0 ||
+                        goods.getPrice() == null || goods.getPrice() == 0 ||
+                        goods.getTotalPrice() == null || goods.getTotalPrice() == 0){
+                    return;
+                }
+                excelDataList.add(goods);
+            }
+
+            @Override
+            public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+
+            }
+        }).doReadAll();
+        LogUtil.info("共读取到["+ excelDataList.size() + "]条原表数据：" + excelDataList);
     }
 
     /**
@@ -322,11 +362,6 @@ public class MainController implements Initializable {
                 iterator.remove();
             }
         }
-        /*finalDataList.clear();
-        if (shortGoodsList.size() > 0){
-            System.out.println("集合长度：" + shortGoodsList.size());
-            writeToOutFile(shortGoodsList);
-        }*/
         //将回写数据集合写出到输出文件
         writeFile();
         if (shortGoodsList.size() > 0){
@@ -361,13 +396,25 @@ public class MainController implements Initializable {
     */
     private static int saveCount = 1;
     private void writeFile() {
-        System.out.println("第" + saveCount + "次writeFile回写集合：" + finalDataList);
+        //拼接excel文件输出路径
         String  outFilePath;
         if (inFileName == null) {
             outFilePath = fileOutDir.getPath() + "done_" + System.currentTimeMillis() + ".xls";
         }
         String[] splits = inFileName.split("\\.");
         outFilePath = fileOutDir.getPath() + File.separator + splits[0]+ "_done_" + saveCount + "." + splits[1];
+        //合计数据写出到最后一行
+        if (addTotalCB.isSelected()) {
+            Goods total = new Goods();
+            total.setName("合计");
+            Float totalPrice = 0F;
+            for (Goods goods : finalDataList) {
+                totalPrice += goods.getTotalPrice();
+            }
+            total.setTotalPrice(totalPrice);
+            finalDataList.add(total);
+        }
+        //写出到excel文件
         LogUtil.info("第" + saveCount + "次保存内容:" + finalDataList.toString());
         EasyExcel.write(outFilePath, Goods.class)
                 .sheet("sheet1")
@@ -452,6 +499,7 @@ public class MainController implements Initializable {
     }
     //开始读取txt文件
     public void beginRead(ActionEvent actionEvent) {
+        DialogUtils.showLoading(mainVB,"正在添加...");
         //从txt文件读取
         List<SystemGoods> list = readSystemDataListFromTxt(txtPathTF.getText());
         //保存
@@ -461,24 +509,29 @@ public class MainController implements Initializable {
     * @Author: GodLu
     * @Date: 2024/2/27 23:33
     * @Description: 保存库内数据集合
-    * @param systemDataList 库内数据集合
+    * @param systemGoodsList 库内数据集合
     * @return: void
     */
-    private void saveSystemDataList(List<SystemGoods> systemDataList){
-        if (systemDataList == null || systemDataList.size() == 0){
+    private void saveSystemDataList(List<SystemGoods> systemGoodsList){
+        if (systemGoodsList == null || systemGoodsList.size() == 0){
             LogUtil.error("保存数据为空");
+            DialogUtils.closeLoading();
             DialogUtils.showErrorDialog(mainVB,"保存数据为空！");
+            return;
         }
+        systemDataList.addAll(systemGoodsList);
         FileUtil.getInstance().saveSystemDataStr(systemDataList, new FileUtil.WriteFileListener() {
             @Override
             public void onSuccess() {
                 LogUtil.info("添加数据成功：" + systemDataList);
-                DialogUtils.showPromptDialog(mainVB,"添加数据成功：" + systemDataList);
+                DialogUtils.closeLoading();
+                DialogUtils.showLongMsgDialog(mainVB,"添加数据成功：" + systemDataList);
             }
 
             @Override
             public void onFail(String msg) {
                 LogUtil.error("添加失败：" + msg);
+                DialogUtils.closeLoading();
                 DialogUtils.showErrorDialog(mainVB,"添加失败：" + msg);
             }
         });
@@ -503,7 +556,7 @@ public class MainController implements Initializable {
             String data = jsonObject.getString("data");
             LogUtil.info("data节点字符串：" + data);
             JSONArray dataArray = JSON.parseArray(data);
-            LogUtil.info("data节点数组：" + dataArray.size() + dataArray.toString());
+            LogUtil.info("data节点数组：" + dataArray.size() + dataArray);
             for (Object o : dataArray) {
                 JSONObject json = JSON.parseObject(o.toString());
                 String goodsName = json.getString("WPMC");
